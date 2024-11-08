@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>plane</title>
+		<meta charset="utf-8">
+		<meta name="robots" content="noindex, nofollow">
+		<link rel="icon" href="data:;base64,=">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			
+			* {
+				margin:0;
+				padding:0;
+				-webkit-user-select:none;
+				-moz-user-select:none;
+				-ms-user-select:none;
+			}
+			
+			body {
+				background:#000;
+				width:100dvw;
+				height:100dvh;
+				overflow:hidden;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<script src="../docs/guide.js"></script>
+		<script src="../docs/twgl.min.js"></script>
+		<script type="module">
+			
+			const width = 1920<<1;
+			const height = 1080<<1;
+			
+			const canvas = document.createElement("canvas");
+			Object.assign(canvas,{width:width,height:height});
+			Object.assign(canvas.style,{"vertical-align":"top","outline":"1px solid #0FF"});
+			
+			const div = document.createElement("div");
+			Object.assign(div.style,{"display":"flex","width":"100vw","height":"100dvh"});
+			div.appendChild(canvas);
+			
+			const gl = canvas.getContext("experimental-webgl",{antialias:true});
+			
+			const program = twgl.createProgramFromSources(gl,[`
+uniform mat4 PM; 
+attribute vec4 position; 
+void main() { 
+	gl_Position = PM*(position); 
+}`,`
+precision mediump float; 
+void main() { 
+	gl_FragColor = vec4(1.0); 
+}`]);
+						
+			if(program) {
+				
+				const Z = -4;
+				
+				const programInfo = twgl.createProgramInfoFromProgram(gl,program);
+				const bufferInfo = twgl.createBufferInfoFromArrays(gl,{
+					position: { numComponents:3, data:[
+						-1, -1, Z,
+						 1, -1, Z,
+						 1,  1, Z,
+						-1,  1, Z
+					]},
+					indices:{ numComponents:3, data:[
+						0, 1, 2, 
+						0, 2, 3
+					]},
+				});
+				
+				const uniforms = {
+					PM:[						1.426317,0.000000,0.000000,0.000000,0.000000,2.535675,0.000000,0.000000,-0.001979,0.004613,-1.000000,-1.000000,0.000000,0.000000,-0.001000,0.000000
+					]
+				};
+				
+				const draw = (e)=>{
+					
+					gl.viewport(0,0,width,height);
+					gl.enable(gl.DEPTH_TEST);
+					
+					gl.clearColor(0,0,0,1);
+					gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+					
+					gl.useProgram(program);
+					twgl.setBuffersAndAttributes(gl,programInfo,bufferInfo);
+					twgl.setUniforms(programInfo,uniforms);
+					gl.drawElements(gl.TRIANGLES,bufferInfo.numElements,gl.UNSIGNED_SHORT,0);
+				};
+
+				setInterval(draw,33);
+				draw();
+			}
+							
+			const resize = (e)=>{
+				const sx = window.innerWidth/width;
+				const sy = window.innerHeight/height;
+				if(sx<sy) {
+					Object.assign(canvas.style,{"width":"100dvw","height":"auto","margin":"auto 0"});
+				}
+				else {
+					Object.assign(canvas.style,{"width":"auto","height":"100dvh","margin":"0 auto"});
+				}
+			}
+			
+			let tid = 0;
+			window.addEventListener("resize",(e)=>{
+				if(tid) clearTimeout(tid);
+				tid = setTimeout((e)=>resize(),15);
+			});
+			
+			resize();
+			document.body.appendChild(div);
+			
+		</script>
+	</body>
+</html>
