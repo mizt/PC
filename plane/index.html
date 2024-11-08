@@ -56,15 +56,15 @@ void main() {
 						
 			if(program) {
 				
-				const Z = -4;
+				const Z = -2;
 				
 				const programInfo = twgl.createProgramInfoFromProgram(gl,program);
 				const bufferInfo = twgl.createBufferInfoFromArrays(gl,{
 					position: { numComponents:3, data:[
-						-1, -1, Z,
-						 1, -1, Z,
-						 1,  1, Z,
-						-1,  1, Z
+						-1*0.5, -1*0.5, Z,
+						 1*0.5, -1*0.5, Z,
+						 1*0.5,  1*0.5, Z,
+						-1*0.5,  1*0.5, Z
 					]},
 					indices:{ numComponents:3, data:[
 						0, 1, 2, 
