@@ -2,7 +2,6 @@
 #import <simd/simd.h>
 #import <vector>
 
-
 int main(int argc, char *argv[]) {
     @autoreleasepool {
         
